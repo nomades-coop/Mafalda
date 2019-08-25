@@ -75,27 +75,39 @@ class Client(models.Model):
 class Presupuesto(models.Model):
     """This class represents the Presupuesto model."""
     date = models.DateField()
-    product_id = models.ForeignKey('Product', on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    products= models.ManyToManyField(Product, related_name="product",
+                                          through_fields=('presupuesto','product'),
+                                          through='Products')
     #TODO: a ser determinado en la vista
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     #TODO: lo pongo en la vista, sacandolo del modelo producto?
     iva = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     #TODO: el descuento es un % o un monto?
     discounts = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
+    
     def __str__(self):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.date)
 
 
+class Products(models.Model):
+    """
+    This class acts as an intermediate table for the many to many relationship between Product and Presupuesto models,
+    and adds the quantity of the product field.
+    """
+    presupuesto = models.ForeignKey(Presupuesto, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+
 class Employee(models.Model):
+    """This class represents the Employee model."""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
 
 
-# This receiver handles token creation immediately a new user is created.
 @receiver(post_save, sender=User)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
+    """This receiver handles token creation immediately a new user is created."""
     if created:
         Token.objects.create(user=instance)
