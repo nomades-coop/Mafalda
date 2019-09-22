@@ -1,29 +1,25 @@
 from django.urls import path
 
-app_name = 'base'
+from base.views import (ProductView, CreateProductView, CompanyView, CreateCompanyView,
+                        CreateParametersView, ParametersView, PresupuestoView, CreatePresupuestoView, ClientView, CreateClientView)
+from rest_framework.authtoken.views import obtain_auth_token
+
+
 urlpatterns = [
+    path('products/', ProductView.as_view(), name='products'),
+    path('product/create/', CreateProductView.as_view()),
 
-    #TODO: idea: que la pagina principal de la api muestre las opciones disponible: ver productos,
-    #empresa, parametros, crud usuarios
-    # path('', PostListView.as_view(), name='post-list'),
+    path('parameters/', ParametersView.as_view()),
+    path('parameters/create/', CreateParametersView.as_view()),
 
-    # path('comment/create/', CommentCreateView.as_view(), name='comment-create'),
+    path('company/', CompanyView.as_view()),
+    path('company/create/', CreateCompanyView.as_view()),
 
-    # path('comment/update/<int:pk>/',
-    #      CommentUpdate.as_view(), name='update-comment'),
+    path('presupuesto/', PresupuestoView.as_view()),
+    path('presupuesto/create/', CreatePresupuestoView.as_view()),
 
-    # path('comment/delete/<int:pk>/',
-    #      CommentDelete.as_view(), name='delete-comment'),
+    path('client/', ClientView.as_view()),
+    path('client/create/', CreateClientView.as_view()),
 
-    # path('autor/posts/<int:user_id>/',
-    #      profile_posts_list_view, name='profile-posts'),
-
-    # path('post/<int:pk>/', post_detail_view, name='post-detail'),
-
-    # path('comment/vote-up/<int:pk>/', vote_up, name='vote_up'),
-
-    # path('comment/vote-down/<int:pk>/', vote_down, name='vote_down'),
-
-    # path('post/search/', search_view, name='search_view'),
-
+    path('get-token/', obtain_auth_token)
 ]
