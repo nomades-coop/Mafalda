@@ -2,7 +2,7 @@ import json
 import decimal
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from rest_framework import generics,viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -123,17 +123,15 @@ def calculate_presupuesto(presupuesto, total_price, total_iva):
 
 
 #path()
-class CreatePresupuestoView(generics.ListCreateAPIView):
-    """Esta clase maneja los requests GET y POST."""
+class CreatePresupuestoView(viewsets.ModelViewSet):
     queryset = Presupuesto.objects.all()
     serializer_class = PresupuestoSerializer
 
-    def perform_create(self, serializer):
-        """
-        View to create a new presupuesto. To create a new instance of the intermediate table Item,
-        this view initialize it in memory to save all together with bulk_create
-        """
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         serializer.save()
+        
         id_presupuesto = serializer.instance.id
         presupuesto= Presupuesto.objects.get(id=id_presupuesto)
         post = self.request.POST
@@ -157,7 +155,47 @@ class CreatePresupuestoView(generics.ListCreateAPIView):
 
         Item.objects.bulk_create(item_in_memory) #guarda en la base de datos todos los Item de una sola vez
         calculate_presupuesto(presupuesto, total_price, total_iva) #funcion definida mas arriba para sacar todos los calculos de esta funcion.
-        presupuesto.save()
+        # presupuesto.save()
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# #path()
+# class CreatePresupuestoView(generics.ListCreateAPIView):
+#     """Esta clase maneja los requests GET y POST."""
+#     queryset = Presupuesto.objects.all()
+#     serializer_class = PresupuestoSerializer
+
+#     def perform_create(self, serializer):
+#         """
+#         View to create a new presupuesto. To create a new instance of the intermediate table Item,
+#         this view initialize it in memory to save all together with bulk_create
+#         """
+#         serializer.save()
+#         id_presupuesto = serializer.instance.id
+#         presupuesto= Presupuesto.objects.get(id=id_presupuesto)
+#         post = self.request.POST
+
+#         products_list = json.loads(post.get('items')) #json.loads transforma la lista en formato string a formato lista de python
+#         total_price = 0 #Lleva la cuenta del precio final a pagar por el cliente
+#         total_iva = 0
+#         item_in_memory = []
+
+#         for prod in products_list:
+#             product = Product.objects.get(id=prod['id'])
+#             surcharge_price = product.list_price*(1+product.surcharge/decimal.Decimal(100))
+#             iva= surcharge_price*(product.iva_percentage/decimal.Decimal(100))
+#             final_price = surcharge_price + iva
+#             # TODO: Instanciar sin guardar los items en una lista. bulk save. django debug toolbar.prefetch related
+#             item_in_memory.append(Item(presupuesto=serializer.instance,
+#                 product=Product.objects.get(pk=prod['id']), quantity=prod['quantity'],
+#                 price = surcharge_price, iva=iva, final_price=final_price))
+#             total_price += float(final_price)*float(prod['quantity'])
+#             total_iva += float(iva)*float(prod['quantity'])
+
+#         Item.objects.bulk_create(item_in_memory) #guarda en la base de datos todos los Item de una sola vez
+#         calculate_presupuesto(presupuesto, total_price, total_iva) #funcion definida mas arriba para sacar todos los calculos de esta funcion.
+#         presupuesto.save()
 
 
 

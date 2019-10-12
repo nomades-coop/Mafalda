@@ -16,7 +16,7 @@ urlpatterns = [
     path('company/create/', CreateCompanyView.as_view()),
 
     path('presupuesto/', PresupuestoView.as_view()),
-    path('presupuesto/create/', CreatePresupuestoView.as_view()),
+    path('presupuesto/create/', CreatePresupuestoView.as_view({'post':'create'})),
 
     path('client/', ClientView.as_view()),
     path('client/create/', CreateClientView.as_view()),
