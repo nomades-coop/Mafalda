@@ -46,7 +46,7 @@ class Product(models.Model):
     list_price= models.DecimalField(max_digits=10, decimal_places=2, default=0)
     surcharge = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     iva_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+    company_id = models.ForeignKey('Company', on_delete=models.CASCADE,blank=True, null=True)
     #TODO: especificar el lugar a subir la foto, precio total
     picture = models.ImageField(upload_to=None, blank=True)
 
