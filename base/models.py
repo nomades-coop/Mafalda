@@ -20,6 +20,8 @@ class Company(models.Model):
     cuit = models.CharField(max_length=13)
     activity_start_date = models.DateField()
 
+    class Meta(object):
+        verbose_name_plural = 'Companies'
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
@@ -29,6 +31,9 @@ class Company(models.Model):
 class Parameters(models.Model):
     """This class represents the Parameters model."""
     surcharge = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    class Meta(object):
+        verbose_name_plural = 'Parameters'
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
@@ -109,6 +114,9 @@ class Employee(models.Model):
     """This class represents the Employee model."""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+
+    class Meta(object):
+        verbose_name_plural = 'Employee'
 
 
 @receiver(post_save, sender=User)
