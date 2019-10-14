@@ -40,7 +40,7 @@ class CreatePresupuestoView(viewsets.ModelViewSet):
         
         id_presupuesto = serializer.instance.id
         presupuesto= Presupuesto.objects.get(id=id_presupuesto)
-        post = self.request.POST
+        post = self.request.data
         # import pdb; pdb.set_trace()
         products_list = json.loads(post.get('items')) #json.loads transforma la lista en formato string a formato lista de python
         total_price = 0 #Lleva la cuenta del precio final a pagar por el cliente
