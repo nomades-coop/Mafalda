@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    # debug_toolbar muestra la info al hacer un request
     'debug_toolbar',
+    # swagger de la app https://django-rest-swagger.readthedocs.io/en/latest/
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# debug_roolbar conf
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
@@ -128,7 +132,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# REST_FRAMEWORK = {
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 #     'DEFAULT_PERMISSION_CLASSES': (
 #         'rest_framework.permissions.IsAuthenticated',
 #     ),
@@ -136,4 +141,4 @@ STATIC_URL = '/static/'
 #         'rest_framework.authentication.BasicAuthentication',
 #         'rest_framework.authentication.TokenAuthentication',
 #     )
-# }
+}
