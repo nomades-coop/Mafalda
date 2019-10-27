@@ -1,0 +1,2 @@
+[{"model": "base.employee", "pk": 1, "fields": {"user": 1, "company_id": 1}}, 
+    {"model": "base.employee", "pk": 2, "fields": {"user": 2, "company_id": 1}}]

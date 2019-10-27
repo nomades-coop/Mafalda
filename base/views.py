@@ -33,7 +33,6 @@ class PresupuestoView(viewsets.ModelViewSet):
         id_presupuesto = serializer.instance.id
         presupuesto= Presupuesto.objects.get(id=id_presupuesto)
         post = self.request.data
-        # import pdb; pdb.set_trace()
         products_list = json.loads(post.get('items')) #json.loads transforma la lista en formato string a formato lista de python
         total_price = 0 #Lleva la cuenta del precio final a pagar por el cliente
         total_iva = 0
@@ -44,7 +43,6 @@ class PresupuestoView(viewsets.ModelViewSet):
             surcharge_price = product.list_price*(1+product.surcharge/decimal.Decimal(100))
             iva= surcharge_price*(product.iva_percentage/decimal.Decimal(100))
             final_price = surcharge_price + iva
-            # TODO: Instanciar sin guardar los items en una lista. bulk save. django debug toolbar.prefetch related
             item_in_memory.append(Item(presupuesto=serializer.instance,
                 product=Product.objects.get(pk=prod['id']), quantity=prod['quantity'],
                 price = surcharge_price, iva=iva, final_price=final_price))

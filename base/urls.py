@@ -27,7 +27,6 @@ router.register(r'employee', EmployeeView)
 
 urlpatterns = [
     path('docs', schema_view),
-
     path('', include(router.urls)),
 ]
 

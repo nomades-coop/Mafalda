@@ -1,0 +1,2 @@
+[{"model": "base.client", "pk": 1, "fields": {"name_bussinessname": "'Pasteleria la luna'", "commercial_address": "'av siempreviva 123'", "cuit": "71655244855", "iva_condition": "'Responsable Inscripto'", "sale_condition": "CTD", "company_id": 1}},
+ {"model": "base.client", "pk": 2, "fields": {"name_bussinessname": "'El arcoiris'", "commercial_address": "'av siempreviva 1234'", "cuit": "71655244755", "iva_condition": "'Responsable Inscripto'", "sale_condition": "CTD", "company_id": 1}}]
