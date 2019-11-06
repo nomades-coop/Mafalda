@@ -14,6 +14,14 @@ PRESUPUESTO_REQUEST= {
 CLIENT_REQUEST = {
     "name_bussinessname": "Blancanieves",
     "commercial_address":"Pueyrredon 934",
+    "cuit" : "27327667535",
+    "iva_condition" : "Responsable inscripto",
+    "company_id" : 1
+    }
+
+CLIENT_REQUEST_BAD_CUIT = {
+    "name_bussinessname": "Blancanieves",
+    "commercial_address":"Pueyrredon 934",
     "cuit" : "12345678978",
     "iva_condition" : "Responsable inscripto",
     "company_id" : 1
@@ -32,7 +40,8 @@ CLIENT_REQUEST_PUT_BAD_INFO = {
     "commercial_address": 2,
     "cuit" : 3,
     "iva_condition" : 4,
-    "company_id" : 1
+    "sale_condition" : 5,
+    "company_id" : 'rr'
     }
 
 COMPANY_REQUEST = {
@@ -112,14 +121,14 @@ PRODUCT_REQUEST_PUT_BAD_INFO = {
 
 
 # tests del endpoint /product/
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_post_product(django_client):
     # record1 = ProductFactory()
     post = django_client.post('/product/', PRODUCT_REQUEST, format='json')
     assert post.status_code == 201
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_post_product_no_surcharge_takes_default_from_parameters(django_client):
     post = django_client.post('/product/', PRODUCT_REQUEST_NO_SURCHARGE,
@@ -128,21 +137,21 @@ def test_post_product_no_surcharge_takes_default_from_parameters(django_client):
     assert test.surcharge == 10
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_get_list_of_products(django_client, django_db_setup):
     response = django_client.get('/product/')
     assert response.status_code == 200
     assert len(response.json()) == 13
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_get_product_by_id(django_client, django_db_setup):
     response = django_client.get('/product/1/')
     assert response.status_code is 200
     assert response.json()['id'] is 1
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_put_product(django_client, django_db_setup):
     response = django_client.put('/product/13/', PRODUCT_REQUEST_PUT,
@@ -151,14 +160,14 @@ def test_put_product(django_client, django_db_setup):
     test = Product.objects.get(id=response.data['id'])
     assert test.name == 'Tombow dual brush'
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_put_product_bad_info(django_client, django_db_setup):
     response = django_client.put('/product/13/', PRODUCT_REQUEST_PUT_BAD_INFO,
         format='json')
     assert response.status_code == 400
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_patch_product(django_client, django_db_setup):
     response = django_client.patch('/product/13/',
@@ -167,7 +176,7 @@ def test_patch_product(django_client, django_db_setup):
     test = Product.objects.get(id=response.data['id'])
     assert test.name == 'Pentel fudepen'
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_delete_product(django_client, django_db_setup):
     response = django_client.delete('/product/13/')
@@ -199,28 +208,27 @@ def test_get_presupuesto_by_id(django_client, django_db_setup):
 
 
 # tests del endpoint /client/
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_get_list_of_clients(django_client, django_db_setup):
     response = django_client.get('/client/')
     assert response.status_code == 200
     assert len(response.json()) == 2
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_get_client_by_id(django_client, django_db_setup):
     response = django_client.get('/client/2/')
     assert response.status_code == 200
 
 
-@pytest.mark.skip("WIP")
 @pytest.mark.django_db(transaction=True)
 def test_get_client_bad_id(django_client, django_db_setup):
     response = django_client.get('/client/pepe/')
     assert response.status_code == 404
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_post_new_client(django_client, django_db_setup):
     response = django_client.post('/client/', CLIENT_REQUEST, format='json')
@@ -228,8 +236,14 @@ def test_post_new_client(django_client, django_db_setup):
     test = Client.objects.get(id=response.data['id'])
     assert test.name_bussinessname == 'Blancanieves'
 
+@pytest.mark.django_db(transaction=True)
+def test_post_new_client_bad_cuit(django_client, django_db_setup):
+    with pytest.raises(ValueError):
+        django_client.post('/client/', CLIENT_REQUEST_BAD_CUIT, format='json')
 
-@pytest.mark.skip
+
+
+
 @pytest.mark.django_db(transaction=True)
 def test_put_client(django_client, django_db_setup):
     response = django_client.put('/client/2/', CLIENT_REQUEST_PUT,
@@ -238,19 +252,18 @@ def test_put_client(django_client, django_db_setup):
     test = Client.objects.get(id=response.data['id'])
     assert test.name_bussinessname == 'Cenicienta'
 
+
 #TODO: hacer validaciones para crear un nuevo cliente?
-@pytest.mark.skip("WIP")
 @pytest.mark.django_db(transaction=True)
 def test_put_client_bad_info(django_client, django_db_setup):
     response = django_client.put('/client/2/', CLIENT_REQUEST_PUT_BAD_INFO,
         format='json')
-    import pdb; pdb.set_trace()
-    assert response.status_code == 200
-    test = Client.objects.get(id=response.data['id'])
-    assert test.name_bussinessname == 'Cenicienta'
+    assert response.status_code == 400
+    # test = Client.objects.get(id=response.data['id'])
+    # assert test.name_bussinessname == '1'
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_patch_client(django_client, django_db_setup):
     response = django_client.patch('/client/2/',
@@ -260,7 +273,7 @@ def test_patch_client(django_client, django_db_setup):
     assert test.name_bussinessname == 'Elsa'
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_delete_client(django_client, django_db_setup):
     response = django_client.delete('/client/2/')
@@ -268,7 +281,7 @@ def test_delete_client(django_client, django_db_setup):
 
 
 # tests del endpoint /company/
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_get_list_of_company(django_client, django_db_setup):
     response = django_client.get('/company/')
@@ -276,21 +289,21 @@ def test_get_list_of_company(django_client, django_db_setup):
     assert len(response.json()) == 1
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_get_company_by_id(django_client, django_db_setup):
     response = django_client.get('/company/1/')
     assert response.status_code == 200
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_get_company_bad_id(django_client, django_db_setup):
     response = django_client.get('/company/pepe/')
     assert response.status_code == 404
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_post_new_company(django_client, django_db_setup):
     response = django_client.post('/company/', COMPANY_REQUEST, format='json')
@@ -299,7 +312,7 @@ def test_post_new_company(django_client, django_db_setup):
     assert test.name == 'Uber'
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_put_company(django_client, django_db_setup):
     response = django_client.put('/company/1/', COMPANY_REQUEST_PUT,
@@ -309,28 +322,25 @@ def test_put_company(django_client, django_db_setup):
     assert test.name == 'Google'
 
 
-@pytest.mark.skip("WIP")
+
 @pytest.mark.django_db(transaction=True)
 def test_put_company_bad_info(django_client, django_db_setup):
     response = django_client.put('/company/1/', CLIENT_REQUEST_PUT_BAD_INFO,
         format='json')
-    import pdb; pdb.set_trace()
-    assert response.status_code == 200
-    test = Company.objects.get(id=response.data['id'])
-    assert test.name_bussinessname == 'Cenicienta'
+    assert response.status_code == 400
 
 
-@pytest.mark.skip("WIP")
+
 @pytest.mark.django_db(transaction=True)
 def test_patch_company(django_client, django_db_setup):
     response = django_client.patch('/company/1/', data={'name':'Rocio'},
         format='json')
     assert response.status_code == 200
     test = Company.objects.get(id=response.data['id'])
-    assert test.name_bussinessname == 'Rocio'
+    assert test.name == 'Rocio'
 
 
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_delete_company(django_client, django_db_setup):
     response = django_client.delete('/company/1/')
@@ -338,26 +348,22 @@ def test_delete_company(django_client, django_db_setup):
 
 
 # tests del endpoint /employee/
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_list_of_employee(django_client, django_db_setup):
     response = django_client.get('/employee/')
     assert response.status_code == 200
     # assert len(response.json()) == 2
 
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_employee_by_id(django_client, django_db_setup):
     response = django_client.get('/employee/1/')
     assert response.status_code == 200
 
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_employee_bad_id(django_client, django_db_setup):
     response = django_client.get('/employee/pepe/')
     assert response.status_code == 404
 
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_post_new_employee(django_client, django_db_setup):
     User.objects.create_user('test', email= None, password='testpassword')
@@ -365,7 +371,6 @@ def test_post_new_employee(django_client, django_db_setup):
     assert response.status_code == 201
 
 
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_put_employee(django_client, django_db_setup):
     response = django_client.put('/employee/2/', EMPLOYEE_REQUEST_PUT,
@@ -373,7 +378,6 @@ def test_put_employee(django_client, django_db_setup):
     assert response.status_code == 400
     assert response.json() == {'user': ['This field must be unique.']}
 
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_delete_employee(django_client, django_db_setup):
     response = django_client.delete('/employee/2/')

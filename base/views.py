@@ -20,6 +20,28 @@ def calculate_presupuesto(presupuesto, total_price, total_iva):
     presupuesto.total_after_discounts = total_price*(1-float(presupuesto.discount )/100)
     return presupuesto
 
+def validar_cuit(cuit):
+    # validaciones minimas
+    if len(cuit) != 11 :
+        return False
+
+    base = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
+
+    # cuit = cuit.replace("-", "") # remuevo las barras
+
+    # calculo el digito verificador:
+    aux = 0
+    for i in range(10):
+        aux += int(cuit[i]) * base[i]
+
+    aux = 11 - (aux - (int(aux / 11) * 11))
+
+    if aux == 11:
+        aux = 0
+    if aux == 10:
+        aux = 9
+
+    return aux == int(cuit[10])
 
 class PresupuestoView(viewsets.ModelViewSet):
     queryset = Presupuesto.objects.all()
@@ -101,6 +123,12 @@ class ClientView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Función que crea un nuevo cliente"""
         serializer.save()
+        id_client= serializer.instance.id
+        client = Client.objects.get(id=id_client)
+        cuit = client.cuit
+        valid = validar_cuit(cuit)
+        if valid != True:
+            raise ValueError('El cuit ingresado no es válido.')
 
 
 #EMPLOYEE

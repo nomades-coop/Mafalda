@@ -45,7 +45,7 @@ class Product(models.Model):
     """This class represents the product model."""
     name = models.CharField(max_length=255, blank=False)
     title = models.CharField(max_length=255)
-    brand = models.CharField(max_length=255)
+    brand = models.CharField(max_length=255, blank=True, null=True)
     #TODO: chequear el largo del codigo
     product_code = models.CharField(max_length=13)
     wholesaler_code = models.CharField(max_length=13)
@@ -71,6 +71,7 @@ class Client(models.Model):
     # TODO: elegir un nombre
     name_bussinessname = models.CharField(max_length=255, blank=False)
     commercial_address = models.CharField(max_length=255)
+    #TODO: validar el cuit (11 digitos).http://www.python.org.ar/wiki/Recetario/ValidarCuit
     cuit = models.CharField(max_length=11)
     #TODO: 2 opciones igual que compañia
     iva_condition = models.CharField(max_length=75)
