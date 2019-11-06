@@ -1,19 +1,17 @@
 import pytest
 import json
-# from django.test import Client
-
-# @pytest.fixture(scope='module')
-# def django_client():
-#     c = Client()
-#     yield c
 
 from rest_framework.test import APIClient
 from django.core.management import call_command
+from django.contrib.auth.models import User
 
 
 @pytest.fixture(scope='module')
+@pytest.mark.django_db(transaction=True)
 def django_client():
-    c = APIClient()
+    user = User.objects.get(username='test')
+    c= APIClient()
+    c.force_authenticate(user=user)
     yield c
 
 @pytest.fixture(scope='function')

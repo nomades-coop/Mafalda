@@ -3,6 +3,7 @@ import decimal
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework import generics,viewsets, status
+from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -27,8 +28,6 @@ def validar_cuit(cuit):
 
     base = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
 
-    # cuit = cuit.replace("-", "") # remuevo las barras
-
     # calculo el digito verificador:
     aux = 0
     for i in range(10):
@@ -46,6 +45,7 @@ def validar_cuit(cuit):
 class PresupuestoView(viewsets.ModelViewSet):
     queryset = Presupuesto.objects.all()
     serializer_class = PresupuestoSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -82,6 +82,19 @@ class CompanyView(viewsets.ModelViewSet):
     """Vista de la empresa Mafalda. OJO! Pueden crearse muchas empresas"""
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        """Función que crea una nueva compania"""
+        serializer.save()
+        id_company= serializer.instance.id
+        company = Company.objects.get(id=id_company)
+        cuit = company.cuit
+        iibb=company.iibb
+        valid_iibb = validar_cuit(iibb)
+        valid_cuit = validar_cuit(cuit)
+        if valid_cuit or valid_iibb != True:
+            raise ValueError('El cuit ingresado no es válido.')
 
 
 #PARAMETERS
@@ -92,6 +105,7 @@ class ParametersView(viewsets.ModelViewSet):
     """
     queryset = Parameters.objects.all()
     serializer_class = ParametersSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 #PRODUCTS
@@ -99,6 +113,7 @@ class ProductView(viewsets.ModelViewSet):
     """Vista para manejar los productos de la librería"""
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         """Función que crea un nuevo producto"""
@@ -119,6 +134,7 @@ class ClientView(viewsets.ModelViewSet):
     """
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         """Función que crea un nuevo cliente"""
@@ -136,6 +152,7 @@ class EmployeeView(viewsets.ModelViewSet):
     """Esta vista maneja los empleados que hacen los presupuestos"""
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         """Función que crea un nuevo empleado"""

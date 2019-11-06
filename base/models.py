@@ -15,9 +15,9 @@ class Company(models.Model):
     name = models.CharField(max_length=255, blank=False)
     razon_social = models.CharField(max_length=255)
     commercial_address = models.CharField(max_length=255)
-    iibb = models.CharField(max_length=25)
+    iibb = models.CharField(max_length=11)
     iva_condition =  models.CharField(max_length=3, choices=CHOICES, default=CONTADO)
-    cuit = models.CharField(max_length=13)
+    cuit = models.CharField(max_length=11)
     activity_start_date = models.DateField()
 
     class Meta(object):
@@ -56,7 +56,7 @@ class Product(models.Model):
     #TODO: que es este company id?
     company_id = models.ForeignKey('Company', on_delete=models.CASCADE,blank=True, null=True)
     #TODO: especificar el lugar a subir la foto, precio total
-    picture = models.ImageField(upload_to=None, blank=True)
+    picture = models.ImageField(upload_to=None, blank=True, null=True)
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
