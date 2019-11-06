@@ -39,11 +39,13 @@ class Parameters(models.Model):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.surcharge)
 
-
+# TODO: ver la logica del surcharge. ahora: si es 0 le pone
+#el de parameters.
 class Product(models.Model):
     """This class represents the product model."""
     name = models.CharField(max_length=255, blank=False)
     title = models.CharField(max_length=255)
+    brand = models.CharField(max_length=255)
     #TODO: chequear el largo del codigo
     product_code = models.CharField(max_length=13)
     wholesaler_code = models.CharField(max_length=13)
@@ -51,6 +53,7 @@ class Product(models.Model):
     list_price= models.DecimalField(max_digits=10, decimal_places=2, default=0)
     surcharge = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     iva_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    #TODO: que es este company id?
     company_id = models.ForeignKey('Company', on_delete=models.CASCADE,blank=True, null=True)
     #TODO: especificar el lugar a subir la foto, precio total
     picture = models.ImageField(upload_to=None, blank=True)
@@ -81,6 +84,7 @@ class Client(models.Model):
 
 class Presupuesto(models.Model):
     """This class represents the Presupuesto model."""
+    #TODO: por default la fecha actual
     date = models.DateField()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     items = models.ManyToManyField(Product, through_fields=('presupuesto','product'),

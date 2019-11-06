@@ -1,0 +1,50 @@
+[
+    {
+        "model": "base.presupuesto",
+        "pk": 1,
+        "fields": {
+            "date": "2019-10-18",
+            "client": 1,
+            "discount": "35.94",
+            "total_before_discounts": "359.37",
+            "total_after_discounts": "230.22",
+            "total_iva": "62.37"
+        }
+    },
+    {
+        "model": "base.presupuesto",
+        "pk": 2,
+        "fields": {
+            "date": "2019-10-19",
+            "client": 1,
+            "discount": "35.94",
+            "total_before_discounts": "555",
+            "total_after_discounts": "444",
+            "total_iva": "62.37"
+        }
+    },
+    {
+        "model": "base.presupuesto",
+        "pk": 3,
+        "fields": {
+            "date": "2019-10-20",
+            "client": 1,
+            "discount": "10.00",
+            "total_before_discounts": "100.00",
+            "total_after_discounts": "90.00",
+            "total_iva": "21.00"
+        }
+    },
+    {
+        "model": "base.presupuesto",
+        "pk": 4,
+        "fields": {
+            "date": "2019-10-21",
+            "client": 1,
+            "discount": "20.00",
+            "total_before_discounts": "1000.00",
+            "total_after_discounts": "900.00",
+            "total_iva": "210.00"
+        }
+    }
+]
