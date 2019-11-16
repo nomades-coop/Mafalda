@@ -1,0 +1,82 @@
+[
+    {
+        "model": "base.product",
+        "pk": 1,
+        "fields": {
+            "name": "goma",
+            "title": "ttitulo",
+            "brand": null,
+            "product_code": "a10001",
+            "wholesaler_code": "a1",
+            "iibb": "12345678921",
+            "list_price": "90.00",
+            "surcharge": "10.00",
+            "iva_percentage": "21.00",
+            "company_id": 1,
+            "picture": "",
+            "final_price": "117.90",
+            "active": true,
+            "company": 2
+        }
+    },
+    {
+        "model": "base.product",
+        "pk": 3,
+        "fields": {
+            "name": "UPDATED",
+            "title": "el lapiz negro",
+            "brand": null,
+            "product_code": "a2",
+            "wholesaler_code": "a1",
+            "iibb": "12345678911",
+            "list_price": "90.00",
+            "surcharge": "0.00",
+            "iva_percentage": "0.00",
+            "company_id": 1,
+            "picture": "",
+            "final_price": "0.00",
+            "active": true,
+            "company": 1
+        }
+    },
+    {
+        "model": "base.product",
+        "pk": 4,
+        "fields": {
+            "name": "lapiz rojo",
+            "title": "el lapiz rojo",
+            "brand": null,
+            "product_code": "a2",
+            "wholesaler_code": "a1",
+            "iibb": "12345678911",
+            "list_price": "90.00",
+            "surcharge": "0.00",
+            "iva_percentage": "0.00",
+            "company_id": 1,
+            "picture": "",
+            "final_price": "0.00",
+            "active": false,
+            "company": 2
+        }
+    },
+    {
+        "model": "base.product",
+        "pk": 5,
+        "fields": {
+            "name": "lapiz azul",
+            "title": "el lapiz azul",
+            "brand": null,
+            "product_code": "a2",
+            "wholesaler_code": "a1",
+            "iibb": "12345678911",
+            "list_price": "90.00",
+            "surcharge": "0.00",
+            "iva_percentage": "0.00",
+            "company_id": 1,
+            "picture": "",
+            "final_price": "0.00",
+            "active": false,
+            "company": 1
+        }
+    }
+]

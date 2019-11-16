@@ -1,0 +1,1 @@
+decimal2 = lambda value: int(value*(10**2))/ 10**2

@@ -1,0 +1,28 @@
+[
+    {
+        "model": "base.company",
+        "pk": 1,
+        "fields": {
+            "name": "Compa\u00f1ia 1",
+            "razon_social": "Las moritas",
+            "commercial_address": "Las moritas 123",
+            "iibb": "12345678922",
+            "iva_condition": "RIN",
+            "cuit": "25327554897",
+            "activity_start_date": "2019-09-01"
+        }
+    },
+    {
+        "model": "base.company",
+        "pk": 2,
+        "fields": {
+            "name": "La libreria de pepe",
+            "razon_social": "Las moritas bonitas",
+            "commercial_address": "Las moritas 123",
+            "iibb": "12345678922",
+            "iva_condition": "RIN",
+            "cuit": "25327554897",
+            "activity_start_date": "2019-09-01"
+        }
+    }
+]
