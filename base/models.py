@@ -57,7 +57,7 @@ class Product(models.Model):
     surcharge = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     iva_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     #TODO: que es este company id? es un SaaS, de otra compañia no pueden ver el prod de la mia
-    company_id = models.ForeignKey('Company', on_delete=models.CASCADE,blank=True, null=True)
+    company = models.ForeignKey('Company', on_delete=models.CASCADE)
     #TODO: especificar el lugar a subir la foto, precio total
     picture = models.ImageField(upload_to=None, blank=True, null=True)
     final_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -99,6 +99,7 @@ class Presupuesto(models.Model):
     total_before_discounts = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_after_discounts = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_iva = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    company = models.ForeignKey('Company', on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
     def __str__(self):

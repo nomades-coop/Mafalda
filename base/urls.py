@@ -14,10 +14,10 @@ from .views import (PresupuestoView, CompanyView,
 schema_view = get_swagger_view(title='Mafalda API')
 
 router = DefaultRouter()
-router.register(r'presupuesto', PresupuestoView)
+router.register(r'presupuesto', PresupuestoView, basename='Presupuesto')
 router.register(r'company', CompanyView)
 router.register(r'parameter', ParametersView)
-router.register(r'product', ProductView)
+router.register(r'product', ProductView, basename='Product')
 router.register(r'client', ClientView)
 router.register(r'employee', EmployeeView)
 

@@ -1,6 +1,7 @@
 import os
 import json
 import decimal
+from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework import generics,viewsets, status
@@ -49,9 +50,17 @@ def validar_cuit(cuit):
 
 #PRESUPUESTO
 class PresupuestoView(viewsets.ModelViewSet):
-    queryset = Presupuesto.objects.all()
+    """Vista para manejar los presupuestos de la librería"""
     serializer_class = PresupuestoSerializer
     # permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        Trae solo los activos y los de la compañia del usuario logueado
+        cambiar el registro en urls: router.register(r'product', ProductView, basename='Product')
+        """
+        return Presupuesto.objects.filter(company_id=self.request.user.employee.company.id, active=True)
+
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -119,14 +128,20 @@ class ParametersView(viewsets.ModelViewSet):
 #PRODUCTS
 class ProductView(viewsets.ModelViewSet):
     """Vista para manejar los productos de la librería"""
-    # traer solo los activos y los de mi compañia, del usuario logueado
-    # company_id = Token.objects.get(key=request.auth.key).user.employee.company.id
-    queryset = Product.objects.filter(active=True)
     serializer_class = ProductSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Trae solo los activos y los de la compañia del usuario logueado
+        cambiar el registro en urls: router.register(r'product', ProductView, basename='Product')
+        """
+        return Product.objects.filter(company_id=self.request.user.employee.company.id, active=True)
+
+
     def perform_create(self, serializer):
         """Función que crea un nuevo producto"""
+        # company_id = Token.objects.get(key=request.auth.key).user.employee.company.id
         serializer.save()
         id_product = serializer.instance.id
         product= Product.objects.get(id=id_product)
