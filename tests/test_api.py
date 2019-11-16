@@ -1,12 +1,14 @@
 import json
 import pytest
+import datetime
+import decimal
+from utils.decimal2 import decimal2
 
 from django.contrib.auth.models import User
 from base.models import Presupuesto, Client, Company, Employee, Product
 
 
 PRESUPUESTO_REQUEST= {
-    "date": "2019-10-25",
     "discount":"10",
     "items": '[{"id":"1","quantity":"2"},{"id":"2","quantity":"1"}]'
     }
@@ -153,6 +155,15 @@ def test_post_product(django_client):
     assert post.status_code == 201
 
 
+@pytest.mark.django_db(transaction=True)
+def test_post_product_correct_final_price(django_client):
+    post = django_client.post('/product/', PRODUCT_REQUEST, format='json')
+    test = Product.objects.get(id=post.data['id'])
+    assert decimal2(test.final_price) == 119.79
+    assert post.status_code == 201
+    assert test.active is True
+
+
 @pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_post_product_no_surcharge_takes_default_from_parameters(django_client):
@@ -162,11 +173,12 @@ def test_post_product_no_surcharge_takes_default_from_parameters(django_client):
     assert test.surcharge == 10
 
 
+# @pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_list_of_products(django_client, django_db_setup):
     response = django_client.get('/product/')
     assert response.status_code == 200
-    assert len(response.json()) == 13
+
 
 
 @pytest.mark.skip
@@ -220,6 +232,7 @@ def test__post_presupuesto_correct_result(django_client, django_db_setup):
     assert response.status_code == 201
     test = Presupuesto.objects.get(id=response.data['id'])
     assert float(test.total_after_discounts) == 230.22
+    assert test.date == datetime.date.today()
 
 
 @pytest.mark.skip
@@ -289,14 +302,11 @@ def test_put_client(django_client, django_db_setup):
 
 
 @pytest.mark.skip
-#TODO: hacer validaciones para crear un nuevo cliente?
 @pytest.mark.django_db(transaction=True)
 def test_put_client_bad_info(django_client, django_db_setup):
     response = django_client.put('/client/2/', CLIENT_REQUEST_PUT_BAD_INFO,
         format='json')
     assert response.status_code == 400
-    # test = Client.objects.get(id=response.data['id'])
-    # assert test.name_bussinessname == '1'
 
 
 @pytest.mark.skip

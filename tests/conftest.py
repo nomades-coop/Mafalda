@@ -7,11 +7,11 @@ from django.contrib.auth.models import User
 
 
 @pytest.fixture(scope='module')
-@pytest.mark.django_db(transaction=True)
+# @pytest.mark.django_db(transaction=True)
 def django_client():
-    user = User.objects.get(username='test')
+    # user = User.objects.get(username='test')
     c= APIClient()
-    c.force_authenticate(user=user)
+    # c.force_authenticate(user=user)
     yield c
 
 @pytest.fixture(scope='function')

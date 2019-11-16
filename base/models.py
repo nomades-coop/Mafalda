@@ -39,6 +39,9 @@ class Parameters(models.Model):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.surcharge)
 
+# TODO:manager del modelo para sobreescribir el método .objects.all(). que solo traiga los objetos
+# de la compañia
+
 # TODO: ver la logica del surcharge. ahora: si es 0 le pone
 #el de parameters.
 class Product(models.Model):
@@ -53,10 +56,12 @@ class Product(models.Model):
     list_price= models.DecimalField(max_digits=10, decimal_places=2, default=0)
     surcharge = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     iva_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    #TODO: que es este company id?
+    #TODO: que es este company id? es un SaaS, de otra compañia no pueden ver el prod de la mia
     company_id = models.ForeignKey('Company', on_delete=models.CASCADE,blank=True, null=True)
     #TODO: especificar el lugar a subir la foto, precio total
     picture = models.ImageField(upload_to=None, blank=True, null=True)
+    final_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
@@ -71,12 +76,12 @@ class Client(models.Model):
     # TODO: elegir un nombre
     name_bussinessname = models.CharField(max_length=255, blank=False)
     commercial_address = models.CharField(max_length=255)
-    #TODO: validar el cuit (11 digitos).http://www.python.org.ar/wiki/Recetario/ValidarCuit
     cuit = models.CharField(max_length=11)
     #TODO: 2 opciones igual que compañia
     iva_condition = models.CharField(max_length=75)
     sale_condition = models.CharField(max_length=3, choices=CHOICES, default=CONTADO)
     company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
@@ -85,16 +90,16 @@ class Client(models.Model):
 
 class Presupuesto(models.Model):
     """This class represents the Presupuesto model."""
-    #TODO: por default la fecha actual
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     items = models.ManyToManyField(Product, through_fields=('presupuesto','product'),
                                           through='Item')
-    #TODO: el descuento es un % del total
+    #TODO: el descuento es un % del total. Aclararlo en el front
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_before_discounts = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_after_discounts = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_iva = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
@@ -112,13 +117,13 @@ class Item(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     iva = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     final_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
 
 class Employee(models.Model):
+    # TODO: cada user tiene que ser un employee. Extender elmodelo usuario para que tenga una fk a employee
     """This class represents the Employee model."""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+    company = models.ForeignKey('Company', on_delete=models.CASCADE)
 
     class Meta(object):
         verbose_name_plural = 'Employee'

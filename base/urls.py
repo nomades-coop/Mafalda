@@ -6,7 +6,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 from rest_framework_swagger.views import get_swagger_view
 
-from base.views import (PresupuestoView, CompanyView,
+from .views import (PresupuestoView, CompanyView,
                         ParametersView, ProductView,
                         ClientView, EmployeeView)
 
@@ -27,10 +27,3 @@ urlpatterns = [
     path('', include(router.urls)),
     path('get-token/', obtain_auth_token)
 ]
-
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns

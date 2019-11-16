@@ -1,3 +1,4 @@
+import os
 import json
 import decimal
 from django.shortcuts import render
@@ -7,12 +8,15 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import (Parameters, Presupuesto, Product, Employee, Client, Company, Item)
-from .serializers import (ParametersSerializer, PresupuestoSerializer, ProductSerializer,
-                            EmployeeSerializer, ClientSerializer, CompanySerializer, ItemSerializer)
+from .models import (Parameters, Presupuesto, Product, Employee, Client,
+                    Company, Item)
+from .serializers import (ParametersSerializer, PresupuestoSerializer,
+    ProductSerializer, EmployeeSerializer, ClientSerializer,
+    CompanySerializer, ItemSerializer)
+from rest_framework.authtoken.models import Token
 
 
-#PRESUPUESTO
+
 def calculate_presupuesto(presupuesto, total_price, total_iva):
     presupuesto.total_iva = total_iva
     presupuesto.total_before_discounts = total_price
@@ -42,10 +46,12 @@ def validar_cuit(cuit):
 
     return aux == int(cuit[10])
 
+
+#PRESUPUESTO
 class PresupuestoView(viewsets.ModelViewSet):
     queryset = Presupuesto.objects.all()
     serializer_class = PresupuestoSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -62,12 +68,14 @@ class PresupuestoView(viewsets.ModelViewSet):
 
         for prod in products_list:
             product = Product.objects.get(id=prod['id'])
-            surcharge_price = product.list_price*(1+product.surcharge/decimal.Decimal(100))
+            surcharge_price = product.list_price*(
+                1+product.surcharge/decimal.Decimal(100))
             iva= surcharge_price*(product.iva_percentage/decimal.Decimal(100))
             final_price = surcharge_price + iva
             item_in_memory.append(Item(presupuesto=serializer.instance,
-                product=Product.objects.get(pk=prod['id']), quantity=prod['quantity'],
-                price = surcharge_price, iva=iva, final_price=final_price))
+                product=Product.objects.get(pk=prod['id']),
+                quantity=prod['quantity'], price = surcharge_price, iva=iva,
+                final_price=final_price))
             total_price += float(final_price)*float(prod['quantity'])
             total_iva += float(iva)*float(prod['quantity'])
 
@@ -82,7 +90,7 @@ class CompanyView(viewsets.ModelViewSet):
     """Vista de la empresa Mafalda. OJO! Pueden crearse muchas empresas"""
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         """Función que crea una nueva compania"""
@@ -105,23 +113,31 @@ class ParametersView(viewsets.ModelViewSet):
     """
     queryset = Parameters.objects.all()
     serializer_class = ParametersSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
 
 #PRODUCTS
 class ProductView(viewsets.ModelViewSet):
     """Vista para manejar los productos de la librería"""
-    queryset = Product.objects.all()
+    # traer solo los activos y los de mi compañia, del usuario logueado
+    # company_id = Token.objects.get(key=request.auth.key).user.employee.company.id
+    queryset = Product.objects.filter(active=True)
     serializer_class = ProductSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         """Función que crea un nuevo producto"""
         serializer.save()
         id_product = serializer.instance.id
         product= Product.objects.get(id=id_product)
+        # user = Token.objects.get(key=self.request.auth.key).user
+        # print(user.username, user.company_id)
         if product.surcharge == 0:
             product.surcharge = Parameters.objects.get(id=1).surcharge
+        surcharge_price = product.list_price*(
+                1+product.surcharge/decimal.Decimal(100))
+        iva= surcharge_price*(product.iva_percentage/decimal.Decimal(100))
+        product.final_price = surcharge_price + iva
         product.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -134,7 +150,7 @@ class ClientView(viewsets.ModelViewSet):
     """
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         """Función que crea un nuevo cliente"""
@@ -152,7 +168,7 @@ class EmployeeView(viewsets.ModelViewSet):
     """Esta vista maneja los empleados que hacen los presupuestos"""
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         """Función que crea un nuevo empleado"""
