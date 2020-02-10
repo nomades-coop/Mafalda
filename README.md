@@ -4,7 +4,7 @@ Mafalda
  -- mafaldavenv (entorno virtual)
  -- Mafalda (carpeta del proyecto)
 
-+ Los empleados y las empresas(Mafalda) son creados desde el administrador `http://localhost:8000/admin/` por el developer del proyecto que se lo entrega al cliente.
++ Los empleados y las empresas(Mafalda) son creados desde el administrador `http://localhost:8000/admin/` por el developer del proyecto que se lo entrega al cliente. Primero crear el superusuario, luego, en el admin, la compañía y por último nuevos usuarios. En la pantalla de creación de usuarios especificar la compañía a la que pertenecen.
 
 + Crear un registro Parámetro en 0 desde el administrador para que el cliente modifique solo este registro.
 
@@ -19,6 +19,8 @@ Mafalda
 + Los comandos `python manage.py check`, `python manage.py createsuperuser`, `python manage.py runserver` deben correrse en la carpeta donde se bajó el proyecto, la que contiene el archivo manage.py.
 
 + El proyecto posee un endpoint para hacer búsquedas de productos.
+
++ No crear productos ni presupuestos desde el admin ya que no hace los cálculos automáticamente de precios. Además pueden mezclarse las compañías, productos, presupuestos, etc entre si (la libreria 1 puede tener en un presupuesto con productos de la libreria 2) La lógica está implementada en las vistas.
 
 
 ---
@@ -107,7 +109,7 @@ Mafalda
 
     wholesaler_code = CharField(max_length=13, código del proveedor)
 
-    iibb = CharField(max_length=25)
+    iibb = CharField(max_length=25, IIBB del proveedor)
 
     list_price= DecimalField(max_digits=10, decimal_places=2)
 

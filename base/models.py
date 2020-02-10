@@ -13,12 +13,12 @@ class Company(models.Model):
     """This class represents the Company model."""
     CONTADO = 'CTD'
     RESP_INSCR = 'RIN'
-    CHOICES = ((CONTADO, 'contado'), (RESP_INSCR, 'Responsable Inscripto'))
+    CHOICES = ((CONTADO, 'Contado'), (RESP_INSCR, 'Responsable Inscripto'))
     name = models.CharField(max_length=255, blank=False)
     razon_social = models.CharField(max_length=255)
     commercial_address = models.CharField(max_length=255)
     iibb = models.CharField(max_length=11)
-    iva_condition =  models.CharField(max_length=3, choices=CHOICES, default=CONTADO)
+    iva_condition =  models.CharField(max_length=3, choices=CHOICES, default=RESP_INSCR)
     cuit = models.CharField(max_length=11,validators=[cuit_validator])
     activity_start_date = models.DateField()
 
