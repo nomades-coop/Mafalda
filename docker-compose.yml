@@ -1,0 +1,18 @@
+version: '3.2'
+
+volumes:
+  db-data:
+    external: false
+
+services:
+  backend:
+    environment:
+      - MAFALDA_ENV=development
+      - SECRET_KEY_MAFALDA=8i+$$3mz09w@)5j_u73=5up9s1s#mmzxv(l3^55vij(1lxucbhm
+    build: .
+    tty: true
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/usr/src/app
