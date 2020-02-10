@@ -60,7 +60,8 @@ class PresupuestoView(viewsets.ModelViewSet):
         """
         if development == 'development':
             return Presupuesto.objects.filter(active=True)
-        return Presupuesto.objects.filter(company_id=self.request.user.employee.company.id, active=True)
+        else:
+            return Presupuesto.objects.filter(company_id=self.request.user.employee.company.id, active=True)
 
     def perform_create(self, serializer):
         """Función que crea un nuevo presupuesto"""
@@ -101,6 +102,7 @@ class PresupuestoView(viewsets.ModelViewSet):
         Item.objects.bulk_create(item_in_memory)
         # funcion definida mas arriba para sacar todos los calculos de esta funcion.
         calculate_presupuesto(presupuesto, total_price, total_iva)
+        presupuesto.active = True
         presupuesto.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -138,7 +140,8 @@ class ProductView(viewsets.ModelViewSet):
         # para que traiga todo.development
         if development == 'development':
             return Product.objects.filter(active=True)
-        return Product.objects.filter(company_id=self.request.user.employee.company.id, active=True)
+        else:
+            return Product.objects.filter(company_id=self.request.user.employee.company.id, active=True)
 
     def perform_create(self, serializer):
         """Función que crea un nuevo producto"""
@@ -151,6 +154,7 @@ class ProductView(viewsets.ModelViewSet):
             owner = self.request.user
             company = self.request.user.employee.company
             serializer.save(company=company, owner=owner)
+
         id_product = serializer.instance.id
         product = Product.objects.get(id=id_product)
         # user = Token.objects.get(key=self.request.auth.key).user
@@ -161,8 +165,19 @@ class ProductView(viewsets.ModelViewSet):
             1+product.surcharge/decimal.Decimal(100))
         iva = surcharge_price*(product.iva_percentage/decimal.Decimal(100))
         product.final_price = surcharge_price + iva
+        product.active = True
         product.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+    
+    def destroy(self, request, pk=None):
+        product = Product.objects.get(id=pk)
+        product.active = False
+        product.save()
+        return Response({'Mensaje':'Producto borrado'}, status=status.HTTP_200_OK)
+
+        
 
 
 @csrf_exempt
@@ -206,7 +221,9 @@ class ClientView(viewsets.ModelViewSet):
         """
         if development == 'development':
             return Client.objects.filter(active=True)
-        return Client.objects.filter(company_id=self.request.user.employee.company.id, active=True)
+        else:
+            return Client.objects.filter(company_id=self.request.user.employee.company.id, active=True)
+
 
     def perform_create(self, serializer):
         """Función que crea un nuevo cliente"""
@@ -215,23 +232,31 @@ class ClientView(viewsets.ModelViewSet):
                 owner = User.objects.get(id=1)
                 company = Company.objects.get(id=1)
                 serializer.save(owner=owner, company=company)
+                
         else:
             owner = self.request.user
             company = self.request.user.employee.company
             serializer.save(company=company, owner=owner)
-        # id_client= serializer.instance.id
-        # client = Client.objects.get(id=id_client)
-        # cuit = client.cuit
-        # valid = validar_cuit(cuit)
-        # if valid == False:
-        #     raise MyCustomExcpetion(detail={"Causa": "El cuit ingresado no es válido"}, status_code=status.HTTP_400_BAD_REQUEST)
+
+        id_client = serializer.instance.id
+        client = Client.objects.get(id=id_client)
+        client.active= True
+        client.save()
+            # id_client= serializer.instance.id
+            # client = Client.objects.get(id=id_client)
+            # cuit = client.cuit
+            # valid = validar_cuit(cuit)
+            # if valid == False:
+            #     raise MyCustomExcpetion(detail={"Causa": "El cuit ingresado no es válido"}, status_code=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 
     def destroy(self, request, pk=None):
         client = Client.objects.get(id=pk)
         client.active = False
         client.save()
-        return Response({'Mensaje':'Cliente borrado'}, status=status.HTTP_200_OK)
+
 
 
 # # EMPLOYEE
