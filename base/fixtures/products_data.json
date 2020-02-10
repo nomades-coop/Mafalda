@@ -13,10 +13,10 @@
             "surcharge": "10.00",
             "iva_percentage": "21.00",
             "company_id": 1,
-            "picture": "",
             "final_price": "117.90",
             "active": true,
-            "company": 2
+            "company": 2,
+            "owner": 1
         }
     },
     {
@@ -33,10 +33,10 @@
             "surcharge": "0.00",
             "iva_percentage": "0.00",
             "company_id": 1,
-            "picture": "",
             "final_price": "0.00",
             "active": true,
-            "company": 1
+            "company": 1,
+            "owner": 1
         }
     },
     {
@@ -53,10 +53,10 @@
             "surcharge": "0.00",
             "iva_percentage": "0.00",
             "company_id": 1,
-            "picture": "",
             "final_price": "0.00",
             "active": false,
-            "company": 2
+            "company": 2,
+            "owner": 1
         }
     },
     {
@@ -73,10 +73,10 @@
             "surcharge": "0.00",
             "iva_percentage": "0.00",
             "company_id": 1,
-            "picture": "",
             "final_price": "0.00",
             "active": false,
-            "company": 1
+            "company": 1,
+            "owner": 1
         }
     }
 ]

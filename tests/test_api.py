@@ -9,6 +9,7 @@ from base.models import Presupuesto, Client, Company, Employee, Product
 
 
 PRESUPUESTO_REQUEST= {
+    "date" : "2019-10-18",
     "discount":"10",
     "items": '[{"id":"1","quantity":"2"},{"id":"2","quantity":"1"}]'
     }
@@ -17,24 +18,24 @@ CLIENT_REQUEST = {
     "name_bussinessname": "Blancanieves",
     "commercial_address":"Pueyrredon 934",
     "cuit" : "27327667535",
-    "iva_condition" : "Responsable inscripto",
-    "company_id" : 1
+    "iva_condition" : "INS",
+    "company" : 1
     }
 
 CLIENT_REQUEST_BAD_CUIT = {
     "name_bussinessname": "Blancanieves",
     "commercial_address":"Pueyrredon 934",
     "cuit" : "12345678978",
-    "iva_condition" : "Responsable inscripto",
-    "company_id" : 1
+    "iva_condition" : "INS",
+    "company" : 1
     }
 
 CLIENT_REQUEST_PUT = {
     "name_bussinessname": "Cenicienta",
     "commercial_address":"Pueyrredon 9343",
-    "cuit" : "15345678978",
-    "iva_condition" : "Responsable inscripto",
-    "company_id" : 1
+    "cuit" : "27327667535",
+    "iva_condition" : "INS",
+    "company" : 1
     }
 
 CLIENT_REQUEST_PUT_BAD_INFO = {
@@ -43,58 +44,9 @@ CLIENT_REQUEST_PUT_BAD_INFO = {
     "cuit" : 3,
     "iva_condition" : 4,
     "sale_condition" : 5,
-    "company_id" : 'rr'
+    "company" : 'rr'
     }
 
-COMPANY_REQUEST = {
-    "name": "Uber",
-    "razon_social":"El Uber",
-    "commercial_address": "Laminar 456",
-    "iibb" : "27327667535",
-    "iva_condition" : "RIN",
-    "cuit" : "27327667535",
-    "activity_start_date" : "1986-10-25"
-    }
-
-COMPANY_REQUEST_BAD_CUIT = {
-    "name": "Uber",
-    "razon_social":"El Uber",
-    "commercial_address": "Laminar 456",
-    "iibb" : "27327667535",
-    "iva_condition" : "RIN",
-    "cuit" : "12345678978",
-    "activity_start_date" : "1986-10-25"
-    }
-
-COMPANY_REQUEST_BAD_IIBB = {
-    "name": "Uber",
-    "razon_social":"El Uber",
-    "commercial_address": "Laminar 456",
-    "iibb" : "1234567897894561230258746",
-    "iva_condition" : "RIN",
-    "cuit" :  "27327667535",
-    "activity_start_date" : "1986-10-25"
-    }
-
-COMPANY_REQUEST_PUT = {
-    "name": "Google",
-    "razon_social":"El -google",
-    "commercial_address": "Laminar 456",
-    "iibb" : "27327667535",
-    "iva_condition" : "RIN",
-    "cuit" : "12345678979",
-    "activity_start_date" : "1986-12-26"
-    }
-
-EMPLOYEE_REQUEST = {
-    "user" : 3,
-    "company_id": 1
-    }
-
-EMPLOYEE_REQUEST_PUT = {
-    "user" : 1,
-    "company_id": 1
-    }
 
 PRODUCT_REQUEST = {
     "name" : 'Pepe',
@@ -105,7 +57,9 @@ PRODUCT_REQUEST = {
     "iibb" : '1234567891592',
     "list_price": 90,
     "surcharge" : 10,
-    "iva_percentage" : 21
+    "iva_percentage" : 21,
+    "company" : 1,
+    "owner":1
     }
 
 PRODUCT_REQUEST_NO_SURCHARGE= {
@@ -116,7 +70,9 @@ PRODUCT_REQUEST_NO_SURCHARGE= {
     "iibb" : '1234567891592',
     "list_price": 700,
     "surcharge" : 0,
-    "iva_percentage" : 21
+    "iva_percentage" : 21,
+    "company" : 1,
+    "owner":1
     }
 
 PRODUCT_REQUEST_PUT = {
@@ -127,7 +83,9 @@ PRODUCT_REQUEST_PUT = {
     "iibb" : '1234567891592',
     "list_price": 100,
     "surcharge" : 25,
-    "iva_percentage" : 21
+    "iva_percentage" : 21,
+    "company" : 1,
+    "owner":1
     }
 
 PRODUCT_REQUEST_PUT_BAD_INFO = {
@@ -138,7 +96,9 @@ PRODUCT_REQUEST_PUT_BAD_INFO = {
     "iibb" : None,
     "list_price": 100,
     "surcharge" : 25,
-    "iva_percentage" : 21
+    "iva_percentage" : 21,
+    "company" : 1,
+    "owner":1
     }
 
 TOKEN_REQUEST = {
@@ -147,8 +107,9 @@ TOKEN_REQUEST = {
 }
 
 
+# @pytest.mark.skip
 # tests del endpoint /product/
-@pytest.mark.skip
+
 @pytest.mark.django_db(transaction=True)
 def test_post_product(django_client):
     post = django_client.post('/product/', PRODUCT_REQUEST, format='json')
@@ -163,8 +124,6 @@ def test_post_product_correct_final_price(django_client):
     assert post.status_code == 201
     assert test.active is True
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_post_product_no_surcharge_takes_default_from_parameters(django_client):
     post = django_client.post('/product/', PRODUCT_REQUEST_NO_SURCHARGE,
@@ -173,77 +132,61 @@ def test_post_product_no_surcharge_takes_default_from_parameters(django_client):
     assert test.surcharge == 10
 
 
-# @pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_list_of_products(django_client, django_db_setup):
     response = django_client.get('/product/')
     assert response.status_code == 200
 
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_product_by_id(django_client, django_db_setup):
     response = django_client.get('/product/1/')
     assert response.status_code is 200
     assert response.json()['id'] is 1
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_put_product(django_client, django_db_setup):
-    response = django_client.put('/product/13/', PRODUCT_REQUEST_PUT,
+    response = django_client.put('/product/1/', PRODUCT_REQUEST_PUT,
         format='json')
     assert response.status_code == 200
     test = Product.objects.get(id=response.data['id'])
     assert test.name == 'Tombow dual brush'
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_put_product_bad_info(django_client, django_db_setup):
-    response = django_client.put('/product/13/', PRODUCT_REQUEST_PUT_BAD_INFO,
+    response = django_client.put('/product/1/', PRODUCT_REQUEST_PUT_BAD_INFO,
         format='json')
     assert response.status_code == 400
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_patch_product(django_client, django_db_setup):
-    response = django_client.patch('/product/13/',
+    response = django_client.patch('/product/1/',
         data={'name':'Pentel fudepen'}, format='json')
     assert response.status_code == 200
     test = Product.objects.get(id=response.data['id'])
     assert test.name == 'Pentel fudepen'
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_delete_product(django_client, django_db_setup):
     response = django_client.delete('/product/13/')
     assert response.status_code == 204
 
 
-# tests del endpoint /presupuesto/
+# tests del endpoint /presupuesto
 @pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
-def test__post_presupuesto_correct_result(django_client, django_db_setup):
-    response = django_client.post('/presupuesto/', PRESUPUESTO_REQUEST, format='json')
-    assert response.status_code == 201
-    test = Presupuesto.objects.get(id=response.data['id'])
+def test_post_presupuesto_correct_result(django_client, django_db_setup):
+    post = django_client.post('/presupuesto/', PRESUPUESTO_REQUEST, format='json')
+    assert post.status_code == 201
+    test = Presupuesto.objects.get(id=post.data['id'])
     assert float(test.total_after_discounts) == 230.22
-    assert test.date == datetime.date.today()
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_list_of_presupuestos(django_client, django_db_setup):
     response = django_client.get('/presupuesto/')
     assert response.status_code == 200
     assert len(response.json()) == 4
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_presupuesto_by_id(django_client, django_db_setup):
     response = django_client.get('/presupuesto/2/')
@@ -252,30 +195,23 @@ def test_get_presupuesto_by_id(django_client, django_db_setup):
     assert float(test.total_after_discounts) == 444
 
 
-# tests del endpoint /client/
-@pytest.mark.skip
+# tests del endpoint /client
 @pytest.mark.django_db(transaction=True)
 def test_get_list_of_clients(django_client, django_db_setup):
     response = django_client.get('/client/')
     assert response.status_code == 200
     assert len(response.json()) == 2
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_client_by_id(django_client, django_db_setup):
     response = django_client.get('/client/2/')
     assert response.status_code == 200
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_get_client_bad_id(django_client, django_db_setup):
     response = django_client.get('/client/pepe/')
     assert response.status_code == 404
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_post_new_client(django_client, django_db_setup):
     response = django_client.post('/client/', CLIENT_REQUEST, format='json')
@@ -283,15 +219,11 @@ def test_post_new_client(django_client, django_db_setup):
     test = Client.objects.get(id=response.data['id'])
     assert test.name_bussinessname == 'Blancanieves'
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_post_new_client_bad_cuit(django_client, django_db_setup):
     with pytest.raises(ValueError):
         django_client.post('/client/', CLIENT_REQUEST_BAD_CUIT, format='json')
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_put_client(django_client, django_db_setup):
     response = django_client.put('/client/2/', CLIENT_REQUEST_PUT,
@@ -300,16 +232,12 @@ def test_put_client(django_client, django_db_setup):
     test = Client.objects.get(id=response.data['id'])
     assert test.name_bussinessname == 'Cenicienta'
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_put_client_bad_info(django_client, django_db_setup):
     response = django_client.put('/client/2/', CLIENT_REQUEST_PUT_BAD_INFO,
         format='json')
     assert response.status_code == 400
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_patch_client(django_client, django_db_setup):
     response = django_client.patch('/client/2/',
@@ -318,137 +246,7 @@ def test_patch_client(django_client, django_db_setup):
     test = Client.objects.get(id=response.data['id'])
     assert test.name_bussinessname == 'Elsa'
 
-
-@pytest.mark.skip
 @pytest.mark.django_db(transaction=True)
 def test_delete_client(django_client, django_db_setup):
     response = django_client.delete('/client/2/')
-    assert response.status_code == 204
-
-
-# tests del endpoint /company/
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_get_list_of_company(django_client, django_db_setup):
-    response = django_client.get('/company/')
-    assert response.status_code == 200
-    assert len(response.json()) == 1
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_get_company_by_id(django_client, django_db_setup):
-    response = django_client.get('/company/1/')
-    assert response.status_code == 200
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_get_company_bad_id(django_client, django_db_setup):
-    response = django_client.get('/company/pepe/')
-    assert response.status_code == 404
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_post_new_company(django_client, django_db_setup):
-    response = django_client.post('/company/', COMPANY_REQUEST, format='json')
-    assert response.status_code == 201
-    test = Company.objects.get(id=response.data['id'])
-    assert test.name == 'Uber'
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_post_new_company_bad_cuit(django_client, django_db_setup):
-    with pytest.raises(ValueError):
-        django_client.post('/company/', COMPANY_REQUEST_BAD_CUIT, format='json')
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_post_new_company_bad_iibb(django_client, django_db_setup):
-    with pytest.raises(ValueError):
-        django_client.post('/company/', COMPANY_REQUEST_BAD_IIBB, format='json')
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_put_company(django_client, django_db_setup):
-    response = django_client.put('/company/1/', COMPANY_REQUEST_PUT,
-        format='json')
-    assert response.status_code == 200
-    test = Company.objects.get(id=response.data['id'])
-    assert test.name == 'Google'
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_put_company_bad_info(django_client, django_db_setup):
-    response = django_client.put('/company/1/', CLIENT_REQUEST_PUT_BAD_INFO,
-        format='json')
-    assert response.status_code == 400
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_patch_company(django_client, django_db_setup):
-    response = django_client.patch('/company/1/', data={'name':'Rocio'},
-        format='json')
-    assert response.status_code == 200
-    test = Company.objects.get(id=response.data['id'])
-    assert test.name == 'Rocio'
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_delete_company(django_client, django_db_setup):
-    response = django_client.delete('/company/1/')
-    assert response.status_code == 204
-
-
-# tests del endpoint /employee/
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_get_list_of_employee(django_client, django_db_setup):
-    response = django_client.get('/employee/')
-    assert response.status_code == 200
-    # assert len(response.json()) == 2
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_get_employee_by_id(django_client, django_db_setup):
-    response = django_client.get('/employee/1/')
-    assert response.status_code == 200
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_get_employee_bad_id(django_client, django_db_setup):
-    response = django_client.get('/employee/pepe/')
-    assert response.status_code == 404
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_post_new_employee(django_client, django_db_setup):
-    User.objects.create_user('test', email= None, password='testpassword')
-    response = django_client.post('/employee/', EMPLOYEE_REQUEST, format='json')
-    assert response.status_code == 201
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_put_employee(django_client, django_db_setup):
-    response = django_client.put('/employee/2/', EMPLOYEE_REQUEST_PUT,
-        format='json')
-    assert response.status_code == 400
-    assert response.json() == {'user': ['This field must be unique.']}
-
-
-@pytest.mark.skip
-@pytest.mark.django_db(transaction=True)
-def test_delete_employee(django_client, django_db_setup):
-    response = django_client.delete('/employee/2/')
     assert response.status_code == 204

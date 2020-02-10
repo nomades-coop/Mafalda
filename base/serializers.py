@@ -8,7 +8,8 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
         model = Company
-        fields = ('id', 'name', 'razon_social', 'commercial_address', 'iibb', 'iva_condition', 'cuit', 'activity_start_date')
+        fields = ('id', 'name', 'razon_social', 'commercial_address', 'iibb', 
+        'iva_condition', 'cuit', 'activity_start_date')
 
 class ParametersSerializer(serializers.ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
@@ -24,7 +25,9 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
         model = Product
-        fields = ('id', 'name', 'title', 'product_code', 'wholesaler_code', 'iibb', 'list_price', 'surcharge', 'company_id', 'picture', 'iva_percentage', 'final_price', 'active')
+        fields = ('id', 'name', 'title', 'product_code', 'wholesaler_code', 'iibb', 'list_price',
+         'surcharge', 'iva_percentage', 'final_price', 'active')
+
 
 class ClientSerializer(serializers.ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
@@ -32,7 +35,8 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
         model = Client
-        fields = ('id', 'name_bussinessname', 'commercial_address', 'cuit', 'iva_condition', 'sale_condition', 'company_id')
+        fields = ('id', 'name_bussinessname', 'commercial_address', 'cuit', 'iva_condition',
+         'sale_condition', 'active')
 
 class ItemSerializer(serializers.ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
@@ -52,7 +56,8 @@ class PresupuestoSerializer(serializers.ModelSerializer):
         """Meta class to map serializer's fields with the model fields."""
         model = Presupuesto
         fields = ('id', 'date', 'client', 'items', 'discount',
-        'total_before_discounts', 'total_after_discounts', 'total_iva', 'prod', 'item')
+        'total_before_discounts', 'total_after_discounts', 'total_iva',
+         'prod', 'item', 'active')
 
 class EmployeeSerializer(serializers.ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
@@ -60,4 +65,4 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
         model = Employee
-        fields = ('id', 'user', 'company_id')
+        fields = ('id', 'user', 'company')

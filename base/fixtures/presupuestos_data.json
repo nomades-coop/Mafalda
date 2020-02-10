@@ -9,7 +9,8 @@
             "total_before_discounts": "359.37",
             "total_after_discounts": "230.22",
             "total_iva": "62.37",
-            "company": 1
+            "company": 1,
+            "owner": 1
         }
     },
     {
@@ -22,7 +23,8 @@
             "total_before_discounts": "555",
             "total_after_discounts": "444",
             "total_iva": "62.37",
-            "company": 1
+            "company": 1,
+            "owner": 1
         }
     },
     {
@@ -35,7 +37,8 @@
             "total_before_discounts": "100.00",
             "total_after_discounts": "90.00",
             "total_iva": "21.00",
-            "company": 2
+            "company": 2,
+            "owner": 1
         }
     },
     {
@@ -48,7 +51,8 @@
             "total_before_discounts": "1000.00",
             "total_after_discounts": "900.00",
             "total_iva": "210.00",
-            "company": 2
+            "company": 2,
+            "owner": 1
         }
     }
 ]

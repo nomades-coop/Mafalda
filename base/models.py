@@ -1,8 +1,10 @@
 from django.db import models
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.dispatch import receiver
+from utils.validators import cuit_validator
 
 #TODO: chequear los onstraints de los campos
 #TODO: chequear el formato de domicilio
@@ -17,7 +19,7 @@ class Company(models.Model):
     commercial_address = models.CharField(max_length=255)
     iibb = models.CharField(max_length=11)
     iva_condition =  models.CharField(max_length=3, choices=CHOICES, default=CONTADO)
-    cuit = models.CharField(max_length=11)
+    cuit = models.CharField(max_length=11,validators=[cuit_validator])
     activity_start_date = models.DateField()
 
     class Meta(object):
@@ -42,8 +44,7 @@ class Parameters(models.Model):
 # TODO:manager del modelo para sobreescribir el método .objects.all(). que solo traiga los objetos
 # de la compañia
 
-# TODO: ver la logica del surcharge. ahora: si es 0 le pone
-#el de parameters.
+# TODO: ver la logica del surcharge. ahora: si es 0 le pone el de parameters.
 class Product(models.Model):
     """This class represents the product model."""
     name = models.CharField(max_length=255, blank=False)
@@ -53,39 +54,50 @@ class Product(models.Model):
     product_code = models.CharField(max_length=13)
     wholesaler_code = models.CharField(max_length=13)
     iibb = models.CharField(max_length=25)
-    list_price= models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    surcharge = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    list_price= models.DecimalField(max_digits=10, decimal_places=2)
+    surcharge = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
     iva_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     #TODO: que es este company id? es un SaaS, de otra compañia no pueden ver el prod de la mia
     company = models.ForeignKey('Company', on_delete=models.CASCADE)
     #TODO: especificar el lugar a subir la foto, precio total
-    picture = models.ImageField(upload_to=None, blank=True, null=True)
+    # picture = models.ImageField(upload_to=None, blank=True, null=True)
     final_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     active = models.BooleanField(default=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.name)
+
+    class Meta(object):
+        ordering = ['name']
 
 
 class Client(models.Model):
     """This class represents the Client model."""
     CONTADO = 'CTD'
     CTA_CTE = 'CCT'
-    CHOICES = ((CONTADO, 'Contado'), (CTA_CTE, 'Cuenta Corriente'))
+    INSCR = 'INS'
+    EXC = 'EXC'
+    CF = 'CFI'
+    CHOICES_SALE = ((CONTADO, 'Contado'), (CTA_CTE, 'Cuenta Corriente'))
+    CHOICES_IVA = ((INSCR, 'Inscripto'), (EXC, 'Exento'), (CF, 'Consumidor Final'))
     # TODO: elegir un nombre
     name_bussinessname = models.CharField(max_length=255, blank=False)
     commercial_address = models.CharField(max_length=255)
-    cuit = models.CharField(max_length=11)
-    #TODO: 2 opciones igual que compañia
-    iva_condition = models.CharField(max_length=75)
-    sale_condition = models.CharField(max_length=3, choices=CHOICES, default=CONTADO)
-    company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+    cuit = models.CharField(max_length=11,validators=[cuit_validator])
+    iva_condition = models.CharField(max_length=3, choices=CHOICES_IVA,default=CF)
+    sale_condition = models.CharField(max_length=3, choices=CHOICES_SALE, default=CONTADO)
+    company = models.ForeignKey('Company', on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='clients')
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.name_bussinessname)
+    
+    class Meta(object):
+        ordering = ['name_bussinessname']
 
 
 class Presupuesto(models.Model):
@@ -101,11 +113,14 @@ class Presupuesto(models.Model):
     total_iva = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     company = models.ForeignKey('Company', on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='presupuestos')
 
     def __str__(self):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.date)
 
+    class Meta(object):
+        ordering = ['-date']
 
 class Item(models.Model):
     """

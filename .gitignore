@@ -59,6 +59,7 @@ coverage.xml
 local_settings.py
 db.sqlite3
 
+
 # Flask stuff:
 instance/
 .webassets-cache
@@ -92,7 +93,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-venv
+venv*
+mafaldavenv
+*venv
 
 # Spyder project settings
 .spyderproject
@@ -111,7 +114,7 @@ venv
 mafalda/static/mafalda/images
 mafalda/media
 django-summernote
-
+mafalda/static*
 
 /.vscode
 .vscode/
@@ -122,3 +125,8 @@ django-summernote
 # mi documentaciondel proyecto
 docs/
 .docs
+
+activate.bat
+deactivate.bat
+
+requirements_old.txt
