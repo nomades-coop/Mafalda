@@ -1,10 +1,28 @@
+@baseUrl = http://localhost:8000
 
-GET http://localhost:8000 HTTP/1.1
-
-POST https://localhost:8000 HTTP/1.1
+# @name login
+POST {{baseUrl}}/get-token/ HTTP/1.1
 content-type: application/json
 
 {
-    "name": "sample",
-    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+  "username": "pablushka",
+  "password": "{{$dotenv USER_PWD}}"
 }
+
+###
+
+# @name logout
+POST {{baseUrl}}/drop-token/ HTTP/1.1
+content-type: application/json
+Authorization: Token {{login.response.body.token}}
+
+###
+
+# @name getClients
+GET http://localhost:8000/client/ HTTP/1.1
+content-type: application/json
+Authorization: Token {{login.response.body.token}}
+
+
+
+

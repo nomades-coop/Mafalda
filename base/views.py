@@ -177,8 +177,18 @@ class ProductView(viewsets.ModelViewSet):
         product.save()
         return Response({'Mensaje':'Producto borrado'}, status=status.HTTP_200_OK)
 
-        
 
+@api_view(['POST'])
+def drop_auth_token(request):
+    try:
+        request.user.auth_token.delete()
+    except (AttributeError, ObjectDoesNotExist):
+        pass
+
+    return Response(
+        {"Mensaje": "Usuario aniquilado"},
+        status=status.HTTP_200_OK
+    )
 
 @csrf_exempt
 # @api_view(('POST',))
