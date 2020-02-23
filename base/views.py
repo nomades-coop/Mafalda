@@ -145,16 +145,17 @@ class ProductView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Función que crea un nuevo producto"""
-        if development == 'development':
-            if self.request.user.is_anonymous == True:
+        if development == 'development'and self.request.user.is_anonymous == True:
                 owner = User.objects.get(id=1)
                 company = Company.objects.get(id=1)
-                serializer.save(owner=owner, company=company)
+                #serializer.save(owner=owner, company=company)
         else:
             owner = self.request.user
             company = self.request.user.employee.company
-            serializer.save(company=company, owner=owner)
+            #serializer.save(company=company, owner=owner)
 
+        serializer.save(owner=owner, company=company)
+        
         id_product = serializer.instance.id
         product = Product.objects.get(id=id_product)
         # user = Token.objects.get(key=self.request.auth.key).user
@@ -237,17 +238,19 @@ class ClientView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Función que crea un nuevo cliente"""
-        if development == 'development':
-            if self.request.user.is_anonymous == True:
+        print (development)
+        print (self.request.user.employee.company)
+        if development == 'development'and self.request.user.is_anonymous == True:
                 owner = User.objects.get(id=1)
                 company = Company.objects.get(id=1)
-                serializer.save(owner=owner, company=company)
+                #serializer.save(owner=owner, company=company)
                 
         else:
             owner = self.request.user
             company = self.request.user.employee.company
-            serializer.save(company=company, owner=owner)
+            #serializer.save(company=company, owner=owner)
 
+        serializer.save(company=company, owner=owner)
         id_client = serializer.instance.id
         client = Client.objects.get(id=id_client)
         client.active= True

@@ -1,5 +1,6 @@
 @baseUrl = http://localhost:8000
 
+######################################################################
 # @name login
 POST {{baseUrl}}/get-token/ HTTP/1.1
 content-type: application/json
@@ -9,20 +10,50 @@ content-type: application/json
   "password": "{{$dotenv USER_PWD}}"
 }
 
-###
-
+######################################################################
 # @name logout
 POST {{baseUrl}}/drop-token/ HTTP/1.1
 content-type: application/json
 Authorization: Token {{login.response.body.token}}
 
-###
-
+######################################################################
 # @name getClients
 GET http://localhost:8000/client/ HTTP/1.1
 content-type: application/json
 Authorization: Token {{login.response.body.token}}
 
+######################################################################
+# @name newClient
+POST http://localhost:8000/client/ HTTP/1.1
+content-type: application/json
+Authorization: Token {{login.response.body.token}}
 
+{
+  "name_bussinessname": "Nomades",
+  "commercial_address": "Pepe le puf 123",
+  "cuit": "20228838021",
+  "iva_condition": "INS",
+  "sale_condition": "CTD",
+  "active": true
+}
 
+######################################################################
+# @name getProducts
+GET http://localhost:8000/product/ HTTP/1.1
+content-type: application/json
+Authorization: Token {{login.response.body.token}}
 
+######################################################################
+# @name newProduct
+POST http://localhost:8000/product/ HTTP/1.1
+content-type: application/json
+Authorization: Token {{login.response.body.token}}
+
+{
+  "name_bussinessname": "Nomades",
+  "commercial_address": "Pepe le puf 123",
+  "cuit": "20228838021",
+  "iva_condition": "INS",
+  "sale_condition": "CTD",
+  "active": true
+}
