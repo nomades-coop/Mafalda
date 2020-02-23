@@ -11,7 +11,7 @@ from .views import (
     ParametersView,
     ProductView,
     ClientView,
-    search_view,
+    search_iban,
     drop_auth_token
 )
 
@@ -30,7 +30,7 @@ router.register(r'client', ClientView, basename='Client')
 urlpatterns = [
     path('docs', schema_view),
     path('', include(router.urls)),
-    path('search/', search_view, name='search_view'),
+    path('search_iban/<str:iban>', search_iban, name='search_iban'),
     path('get-token/', obtain_auth_token),
     path('drop-token/', drop_auth_token, name='drop_auth_token'),
 ]

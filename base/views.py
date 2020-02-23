@@ -19,7 +19,7 @@ from .models import (Parameters, Presupuesto, Product, Employee, Client,
 from .serializers import (ParametersSerializer, PresupuestoSerializer,
                           ProductSerializer, EmployeeSerializer, ClientSerializer,
                           CompanySerializer, ItemSerializer)
-
+from django.forms.models import model_to_dict
 from rest_framework.authtoken.models import Token
 
 
@@ -155,7 +155,7 @@ class ProductView(viewsets.ModelViewSet):
             #serializer.save(company=company, owner=owner)
 
         serializer.save(owner=owner, company=company)
-        
+
         id_product = serializer.instance.id
         product = Product.objects.get(id=id_product)
         # user = Token.objects.get(key=self.request.auth.key).user
@@ -192,30 +192,17 @@ def drop_auth_token(request):
     )
 
 @csrf_exempt
-# @api_view(('POST',))
-def search_view(request):
-    text_search = json.loads(request.POST['text'])
-    results = Product.objects.filter(
-        Q(name__icontains=text_search) | Q(
-            title__icontains=text_search) | Q(brand__icontains=text_search)
+@api_view(('GET',))
+def search_iban(request, iban=""):
+    #text_search = json.loads(request.POST['text'])
+    result = Product.objects.filter(
+        Q(wholesaler_code__icontains=iban) |
+        Q(product_code__icontains=iban)
     )
-    # results = Product.objects.filter(
-    #     Q(name__icontains=text_search)
-    # )
-    result_list = []
-    # for result in results:
-    #     name = result.name
-    #     result_list.append(name)
-
-    for result in results:
-        name = result.name
-        brand = result.brand
-        title = result.title
-        result_dict = dict(name=name, brand=brand, title=title)
-        result_list.append(result_dict)
-
-    return JsonResponse({"Products": result_list})
-
+    if result:
+        return JsonResponse({"product": model_to_dict(result.first())})
+    else:
+        return JsonResponse({"product": ""})
 
 # CLIENT
 class ClientView(viewsets.ModelViewSet):
