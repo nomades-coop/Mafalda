@@ -50,10 +50,13 @@ content-type: application/json
 Authorization: Token {{login.response.body.token}}
 
 {
-  "name_bussinessname": "Nomades",
-  "commercial_address": "Pepe le puf 123",
-  "cuit": "20228838021",
-  "iva_condition": "INS",
-  "sale_condition": "CTD",
+  "name": "Cuaderno de 100 Hojas Tapa dura",
+  "title": "Un Titulo",
+  "product_code": "Cod de la Lib",
+  "wholesaler_code": "Cod. del prov",
+  "iibb": "IIBB ???",
+  "list_price": 175.90,
+  "surcharge": 15,
+  "iva_percentage": 21,
   "active": true
 }
