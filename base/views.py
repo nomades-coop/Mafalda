@@ -22,9 +22,30 @@ from .serializers import (ParametersSerializer, PresupuestoSerializer,
 from django.forms.models import model_to_dict
 from rest_framework.authtoken.models import Token
 
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from django.core import serializers
+from django.core.serializers import serialize
 
 development = os.environ['MAFALDA_ENV']
 
+class MafaldaAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                       context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        user_dict = model_to_dict(user)
+        del user_dict['password']
+        del user_dict['last_login']
+        del user_dict['user_permissions']
+        
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user': user_dict
+        })
 
 class MyCustomException(PermissionDenied):
     status_code = status.HTTP_400_BAD_REQUEST

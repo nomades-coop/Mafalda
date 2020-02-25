@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
 from rest_framework_swagger.views import get_swagger_view
+from . import views
 
 from .views import (
     PresupuestoView,
@@ -31,6 +32,7 @@ urlpatterns = [
     path('docs', schema_view),
     path('', include(router.urls)),
     path('search_iban/<str:iban>', search_iban, name='search_iban'),
-    path('get-token/', obtain_auth_token),
+    # path('get-token/', obtain_auth_token),
+    path('get-token/', views.MafaldaAuthToken.as_view()),
     path('drop-token/', drop_auth_token, name='drop_auth_token'),
 ]
